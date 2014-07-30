@@ -20,7 +20,7 @@ on early-init
     setcon u:r:init:s0
 
     start ueventd
-
+    
 # create mountpoints
     mkdir /mnt 0775 root system
 
@@ -30,6 +30,12 @@ on early-init
     chown system system /sys/fs/selinux/commit_pending_bools
 
 on init
+    chmod -f 0777 /sbin/xboot.sh
+    setenforce 0
+    setprop ro.boot.selinux 0
+    setprop ro.config.knox 0
+    setprop ro.config.tima 0
+    setprop ro.securestorage.support false
     ffu
 sysclktz 0
 
@@ -74,7 +80,7 @@ loglevel 3
     mkdir /data 0771 system system
     mkdir /cache 0770 system cache
     mkdir /config 0500 root root
-
+    
     # See storage config details at http://source.android.com/tech/storage/
 # [ SEC_MM_DRM
     mkdir /mnt/shell 0750 shell shell
@@ -86,6 +92,12 @@ loglevel 3
     mkdir /mnt/secure 0700 root root
     # Create private mountpoint so we can MS_MOVE from staging
     mount tmpfs tmpfs /mnt/secure mode=0700,uid=0,gid=0
+    
+    # Create mountpoint so Dalvik can mark as slave in zygotes.
+    # And this allow CIFS mounting and other app databases.
+    mkdir /mnt/shell/emulated 0700 shell shell
+    mount tmpfs tmpfs /storage mode=0751,uid=0,gid=1028
+    mount tmpfs tmpfs /mnt/shell/emulated mode=0700,uid=0,gid=0
 
     # Directory for staging bindmounts
     mkdir /mnt/secure/staging 0700 root root
@@ -103,7 +115,7 @@ loglevel 3
     mkdir /mnt/obb 0700 root system
     mount tmpfs tmpfs /mnt/obb mode=0755,gid=1000
 
-    write /proc/sys/kernel/panic_on_oops 1
+    write /proc/sys/kernel/panic_on_oops 0
     write /proc/sys/kernel/hung_task_timeout_secs 0
     write /proc/cpu/alignment 4
     write /proc/sys/kernel/sched_latency_ns 10000000
@@ -117,7 +129,8 @@ loglevel 3
     write /proc/sys/net/ipv4/ping_group_range "0 2147483647"
     write /proc/sys/kernel/sched_rt_runtime_us 950000
     write /proc/sys/kernel/sched_rt_period_us 1000000
-
+    write /dev/cpuctl/apps/cpu.notify_on_migrate 1
+    
 # Create cgroup mount points for process groups
     mkdir /dev/cpuctl
     mount cgroup none /dev/cpuctl cpu
@@ -392,9 +405,11 @@ on boot
     chmod 0664 /sys/module/lowmemorykiller/parameters/minfree
 
     # Tweak background writeout
-    write /proc/sys/vm/dirty_expire_centisecs 200
     write /proc/sys/vm/dirty_background_ratio  5
+	write /proc/sys/vm/dirty_ratio 10
+    write /proc/sys/vm/swappiness 10
 
+    
     # reset_reason
     chown system system /proc/reset_reason
     chmod 0600 /proc/reset_reason
@@ -413,59 +428,104 @@ on boot
     chmod 0660 /sys/power/state
     chmod 0660 /sys/power/wake_lock
     chmod 0660 /sys/power/wake_unlock
-
+    
+    # Interactive governor
     chown system system /sys/devices/system/cpu/cpufreq/interactive/timer_rate
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/timer_rate
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/timer_rate
     chown system system /sys/devices/system/cpu/cpufreq/interactive/timer_slack
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/timer_slack
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/timer_slack
     chown system system /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
     chown system system /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
     chown system system /sys/devices/system/cpu/cpufreq/interactive/target_loads
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/target_loads
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/target_loads
     chown system system /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
     chown system system /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
     chown system system /sys/devices/system/cpu/cpufreq/interactive/boost
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/boost
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/boost
     chown system system /sys/devices/system/cpu/cpufreq/interactive/boostpulse
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/boostpulse
     chown system system /sys/devices/system/cpu/cpufreq/interactive/input_boost
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/input_boost
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/input_boost
     chown system system /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration
     chown system system /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
-
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
     chown system system /sys/devices/system/cpu/cpufreq/interactive/multi_enter_load
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/multi_enter_load
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/multi_enter_load
     chown system system /sys/devices/system/cpu/cpufreq/interactive/multi_enter_time
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/multi_enter_time
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/multi_enter_time
     chown system system /sys/devices/system/cpu/cpufreq/interactive/multi_exit_load
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/multi_exit_load
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/multi_exit_load
     chown system system /sys/devices/system/cpu/cpufreq/interactive/multi_exit_time
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/multi_exit_time
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/multi_exit_time
     chown system system /sys/devices/system/cpu/cpufreq/interactive/single_enter_load
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/single_enter_load
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/single_enter_load
     chown system system /sys/devices/system/cpu/cpufreq/interactive/single_enter_time
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/single_enter_time
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/single_enter_time
     chown system system /sys/devices/system/cpu/cpufreq/interactive/single_exit_load
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/single_exit_load
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/single_exit_load
     chown system system /sys/devices/system/cpu/cpufreq/interactive/single_exit_time
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/single_exit_time
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/single_exit_time
     chown system system /sys/devices/system/cpu/cpufreq/interactive/mode
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/mode
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/mode
     chown system system /sys/devices/system/cpu/cpufreq/interactive/enforced_mode
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/enforced_mode
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/enforced_mode
     chown system system /sys/devices/system/cpu/cpufreq/interactive/param_index
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/param_index
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/param_index
     chown system system /sys/devices/system/cpu/cpufreq/interactive/cpu_util
-    chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/cpu_util
+    chmod 0664 /sys/devices/system/cpu/cpufreq/interactive/cpu_util
+    
+    # ondemand governor
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/boost_mode
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/boost_mode
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/conservative_step
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/conservative_step
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/cpu_utilization
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/cpu_utilization
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/down_step_level
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/down_step_level
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/powersave_bias
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/powersave_bias
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_h
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_h
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_l
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_l
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/high_freq_zone
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/high_freq_zone
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/ignore_nice_load
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/ignore_nice_load
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/max_freq_blank
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/max_freq_blank
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/powersave_bias
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/powersave_bias
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/up_conservative_mode
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/up_conservative_mode
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate_min
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate_min
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/up_step_level_b
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/up_step_level_b
+    chown system system /sys/devices/system/cpu/cpufreq/ondemand/up_step_level_l
+    chmod 0664 /sys/devices/system/cpu/cpufreq/ondemand/up_step_level_l
 
     # Assume SMP uses shared cpufreq policy for all CPUs
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-    chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 
     chown system system /sys/class/timed_output/vibrator/enable
     chown system system /sys/class/leds/keyboard-backlight/brightness
@@ -535,7 +595,6 @@ on boot
     chown nfc nfc /dev/pn547
     chmod 0600 /dev/pn547
 
-
 # Set these so we can remotely update SELinux policy
     chown system system /sys/fs/selinux/load
     chown system system /sys/fs/selinux/enforce
@@ -543,7 +602,7 @@ on boot
 # Define TCP buffer sizes for various networks
 #   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
     setprop net.tcp.buffersize.default 4096,87380,704512,4096,16384,110208
-    setprop net.tcp.buffersize.wifi    524288,1048576,4525824,524288,1048576,4525824
+    setprop net.tcp.buffersize.wifi    524288,1048576,5242880,524288,1048576,5242880
     setprop net.tcp.buffersize.lte     524288,1048576,2560000,524288,1048576,2560000
     setprop net.tcp.buffersize.umts    4094,87380,704512,4096,16384,110208
     setprop net.tcp.buffersize.hspa    4094,87380,704512,4096,16384,262144
@@ -556,19 +615,72 @@ on boot
 
 # Assign TCP buffer thresholds to be ceiling value of technology maximums
 # Increased technology maximums should be reflected here.
-    write /proc/sys/net/core/rmem_max  2097152
-    write /proc/sys/net/core/wmem_max  2097152
-	
-	write /sys/block/mmcblk0/queue/scheduler noop
-
+    write /proc/sys/net/core/rmem_max  5242880
+    write /proc/sys/net/core/wmem_max  5242880
+    
+# Network Performance Tweaks    
+    write /proc/sys/net/core/netdev_max_backlog 2048
+    write /proc/sys/net/core/somaxconn 524288
+    write /proc/sys/net/core/optmem_max 524288
+    write /proc/sys/net/ipv4/tcp_rmem  524288 1048576 5242880
+    write /proc/sys/net/ipv4/tcp wmem  524288 1048576 5242880
+    write /proc/sys/net/ipv4/tcp_ecn 2
+    write /proc/sys/net/ipv4/tcp_sack 1
+    write /proc/sys/net/ipv4/tcp_fack 1
+    write /proc/sys/net/ipv4/tcp_timestamps 1
+    write /proc/sys/net/ipv4/tcp_dsack 1
+    write /proc/sys/net/ipv4/tcp_low_latency 1
+    write /proc/sys/net/ipv4/tcp_window_scaling 1
+    write /proc/sys/net/ipv4/tcp_tw_reuse 1
+    write /proc/sys/net/ipv4/tcp_tw_recycle 1
+    write /proc/sys/net/ipv4/tcp_fin_timeout 15
+    write /proc/sys/net/ipv4/tcp_keepalive_time 300
+    write /proc/sys/net/ipv4/tcp_keepalive_probes 5
+    write /proc/sys/net/ipv4/net.ipv4.tcp_keepalive_intvl 15
+    
+    setprop wifi.supplicant_scan_interval 180
+    
+# Netowrk & Kernel Hardening Tweaks
+    #write /proc/sys/net/ipv4/tcp_max_tw_buckets 1440000
+    write /proc/sys/net/ipv4/tcp_max_syn_backlog 2048
+    write /proc/sys/net/ipv4/tcp_rfc1337 1
+    write /proc/sys/net/ipv4/tcp_workaround_signed_windows 1
+    write /proc/sys/net/ipv4/tcp_mtu_probing 1
+    write /proc/sys/net/ipv4/tcp_frto_response 2
+    write /proc/sys/net/ipv4/tcp_syncookies 1
+    write /proc/sys/net/ipv4/tcp_synack_retries 2
+    write /proc/sys/net/ipv4/ip_forward 0
+    write /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts 1
+    write /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses 1
+    write /proc/sys/net/ipv4/conf/all/rp_filter 1
+    write /proc/sys/net/ipv4/conf/all/accept_source_route 0
+    write /proc/sys/net/ipv4/conf/all/send_redirects 0
+    write /proc/sys/net/ipv4/conf/all/accept_redirects 0
+    write /proc/sys/net/ipv4/conf/all/log_martians 0
+    write /proc/sys/net/ipv4/conf/all/forwarding 0
+    write /proc/sys/net/ipv6/conf/default/router_solicitations 0
+    write /proc/sys/net/ipv6/conf/default/accept_ra_rtr_pref 0
+    write /proc/sys/net/ipv6/conf/default/accept_ra_pinfo 0
+    write /proc/sys/net/ipv6/conf/default/accept_ra_defrtr 0
+    write /proc/sys/net/ipv6/conf/default/autoconf 0
+    write /proc/sys/net/ipv6/conf/default/dad_transmits 0
+    write /proc/sys/net/ipv6/conf/default/max_addresses 1
+    write /proc/sys/net/ipv6/conf/default/accept_redirects 0
+    write /proc/sys/kernel/pid_max 65536
+  
     class_start core
     class_start main
-
+    start xbootscript
+            
 on nonencrypted
     class_start late_start
 
 on charger
     class_start charger
+
+# system server cannot write to /proc/sys files, so proxy it through init
+on property:sys.sysctl.extra_free_kbytes=*
+    write /proc/sys/vm/extra_free_kbytes ${sys.sysctl.extra_free_kbytes}
 
 on property:vold.decrypt=trigger_reset_main
     class_reset main
@@ -602,10 +714,6 @@ on property:selinux.reload_policy=1
 on property:sys.powerctl=*
     powerctl ${sys.powerctl}
 
-# system server cannot write to /proc/sys files, so proxy it through init
-on property:sys.sysctl.extra_free_kbytes=*
-    write /proc/sys/vm/extra_free_kbytes ${sys.sysctl.extra_free_kbytes}
-
 ## Daemon processes to be run by init.
 ##
 service sysmon /system/bin/sysmon
@@ -628,9 +736,9 @@ service healthd-charger /sbin/healthd -n
     critical
     seclabel u:r:healthd:s0
 
-#on property:selinux.reload_policy=1
-#    restart ueventd
-#    restart installd
+on property:selinux.reload_policy=1
+    restart ueventd
+    restart installd
 
 service console /system/bin/sh
     class core
@@ -953,5 +1061,20 @@ service iprenew_bt-pan /system/bin/dhcpcd -n
     oneshot
 # end of BT
 
+service xbootscript /sbin/xboot.sh
+    class late_start
+	user root
+	group shell
+    disabled
+    oneshot
+
+# Execute init.d scripts
+service sysinit /system/bin/logwrapper /system/xbin/busybox run-parts /system/etc/init.d
+     class late_start
+     user root
+     group shell
+     oneshot
+        
 on property:sys.boot_completed=1
-    write /sys/block/mmcblk0/queue/scheduler cfq
+    write /sys/block/mmcblk0/queue/scheduler deadline
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive

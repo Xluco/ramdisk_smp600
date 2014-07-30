@@ -208,7 +208,7 @@ on boot
     chown system radio /sys/class/camera/rear/rear_camfw
     chown system radio /sys/class/camera/rear/rear_camtype
     chown system radio /sys/class/camera/flash/rear_flash
-#    chown system radio /sys/class/camera/rear/isp_core
+#   chown system radio /sys/class/camera/rear/isp_core
     chown system radio /sys/class/camera/front/front_camfw
     chown system radio /sys/class/camera/front/front_camtype
 
@@ -217,7 +217,7 @@ on boot
     chmod 0660 /sys/class/host_notify/usb_otg/booster
 
 # SSWAP
-    write /proc/sys/vm/swappiness 130
+#    write /proc/sys/vm/swappiness 130
 
 # PMS DVFS
     chown radio system /sys/power/cpufreq_table
