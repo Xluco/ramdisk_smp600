@@ -122,6 +122,9 @@ ln /dev/frandom /dev/urandom;
 chmod 664 /dev/random;
 chmod 664 /dev/urandom;
 
+# Start UKSM
+echo 1 > /sys/kernel/mm/uksm/run;
+
 # NTFS Support
 if [ ! -e /system/xbin/ntfs-3g ]; then
     $BB dd if="/sbin/ntfs-3g" of="/system/xbin/ntfs-3g";

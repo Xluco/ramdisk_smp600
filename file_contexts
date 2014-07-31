@@ -470,3 +470,8 @@
 /system/vendor/itson(/.*)?  u:object_r:sprintitson_file:s0
 #/vendor/app(/.*)?  u:object_r:sprintitson_file:s0
 /carrier/itson(/.*)?  u:object_r:sprintitson_file:s0
+
+#############################
+# UKSM
+#
+/sys/kernel/mm/uksm(/.*)? u:object_r:sysfs_writable:s0
