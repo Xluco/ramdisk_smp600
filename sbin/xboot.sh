@@ -142,6 +142,9 @@ echo "0" > /sys/module/xt_qtaguid/parameters/debug_mask;
 sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sysctl -w net.ipv4.route.flush=1
 
+# Interactive Tweaks
+echo 1400000 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq;
+
 # Spring Cleaning
 rm -rf /cache/lost+found/* 2> /dev/null;
 rm -rf /data/lost+found/* 2> /dev/null;
