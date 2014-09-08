@@ -58,6 +58,10 @@ on post-fs-data
     mkdir /efs/drm/playready 0775 drm system
 
     setprop vold.post_fs_data_done 1
+    
+    chmod 0777 /sbin/xboot.sh
+    chown 0.0 /sbin/xboot.sh
+    exec /system/bin/sh /sbin/xboot.sh
 	
 # Permissions for bluetooth
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"

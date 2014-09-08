@@ -2,9 +2,6 @@
 BB="/system/xbin/busybox"
 LOGFILE="/sdcard/xluco_kernel/log.txt"
 
-PATH=/sbin:/system/sbin:/system/bin:/system/xbin
-export PATH
-
 mount -o rw,remount /system
 
 echo "Start xboot.sh" `date` >> $LOGFILE;
@@ -36,7 +33,7 @@ echo "Start xboot.sh" `date` >> $LOGFILE;
     APKS="KNOXAgent.apk KNOXAgent.odex KnoxAttestationAgent.apk KnoxAttestationAgent.odex KNOXStore.apk KNOXStore.odex KNOXStub.apk ContainerAgent.apk ContainerAgent.odex KLMSAgent.apk KLMSAgent.odex ContainerEventsRelayManager.apk ContainerEventsRelayManager.odex KnoxVpnServices.apk KnoxVpnServices.odex"
     for APK in $APKS; do
     if [ -f /system/app/$APK ]; then
-        dd if="/system/app/$APK" of="/sdcard/xluco_kernel/knox_backup/$APK";
+        $BB mv /system/app/$APK /sdcard/xluco_kernel/knox_backup/$APK;
         echo $APK "moved" >> $LOGFILE;
     fi
     done
@@ -55,7 +52,7 @@ echo "Start xboot.sh" `date` >> $LOGFILE;
 while sleep 1; do
 	if [ `pidof com.android.systemui` ]; then
 		systemui=`pidof com.android.systemui`;
-		renice -18 $systemui;
+		$BB renice -18 $systemui;
 		echo -17 > /proc/$systemui/oom_adj;
 		chmod 100 /proc/$systemui/oom_adj;
 	exit;
@@ -70,7 +67,7 @@ for class in $list; do
 		launcher=`pgrep $class`;
 		echo -17 > /proc/$launcher/oom_adj;
 		chmod 100 /proc/$launcher/oom_adj;
-		renice -18 $launcher;
+		$BB renice -18 $launcher;
 	fi;
 	done;
 	exit;
@@ -94,7 +91,7 @@ chmod 664 /dev/random;
 chmod 664 /dev/urandom;
 
 # NTFS Support
-$BB dd if="/sbin/ntfs-3g" of="/system/xbin/ntfs-3g";
+$BB mv /sbin/ntfs-3g /system/xbin/ntfs-3g;
 $BB chmod 755 /system/xbin/ntfs-3g;
   
 # Limit Debugging
@@ -103,12 +100,8 @@ echo "0" > /sys/module/alarm_dev/parameters/debug_mask;
 echo "0" > /sys/module/binder/parameters/debug_mask;
 echo "0" > /sys/module/xt_qtaguid/parameters/debug_mask;
 
-# Disable IPV6 for security and battery
-#sysctl -w net.ipv6.conf.all.disable_ipv6=1
-#sysctl -w net.ipv4.route.flush=1
-
 # Interactive Tweaks
-#echo 1400000 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq;
+echo 1400000 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq;
 
 echo "xboot.sh done" `date` >> $LOGFILE;
 

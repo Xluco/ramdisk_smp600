@@ -380,8 +380,6 @@ on post-fs-data
     mkdir /data/backup 0700 system system
     restorecon /data/backup
     
-    exec /system/bin/sh /init.xluco.sh
-    
 on boot
     setprop wifi.interface wlan0
 # basic network init
