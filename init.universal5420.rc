@@ -58,11 +58,7 @@ on post-fs-data
     mkdir /efs/drm/playready 0775 drm system
 
     setprop vold.post_fs_data_done 1
-    
-    chmod 0777 /sbin/xboot.sh
-    chown 0.0 /sbin/xboot.sh
-    exec /system/bin/sh /sbin/xboot.sh
-	
+    	
 # Permissions for bluetooth
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
     chown bluetooth net_bt_stack ro.bt.bdaddr_path
@@ -447,7 +443,7 @@ service fuse_UsbDriveF /system/bin/sdcard -u 1023 -g 1023 -d -f /mnt/media_rw/Us
 on property:ro.debug_level=0x4f4c
 	start watchdogd
 
-# on userdebug and eng builds, enable kgdb on the serial console
+e# on userdebug and eng builds, enable kgdb on the serial console
 on property:ro.debuggable=1
     write /sys/module/kgdboc/parameters/kgdboc ttyFIQ1
     write /sys/module/fiq_debugger/parameters/kgdb_enable 1

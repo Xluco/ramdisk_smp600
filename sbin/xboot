@@ -2,11 +2,11 @@
 BB="/system/xbin/busybox"
 LOGFILE="/sdcard/xluco_kernel/log.txt"
 
-mount -o rw,remount /system
+mount -o remount,rw /system
 
 echo "Start xboot.sh" `date` >> $LOGFILE;
 
-### REDUNDANCY ### 
+### REDUNDANCY ###
 ### This should have been done by the update-script & init.rc,
 ### but it's important for stability so lets do it again to be safe
 
@@ -16,7 +16,7 @@ echo "Start xboot.sh" `date` >> $LOGFILE;
         echo "KNOX backup folder created" >> $LOGFILE;
     fi
 
-    # disable knox & tima 
+    # disable knox & tima
     pm disable com.sec.knox.seandroid;
 
     BP="/system/build.prop"
@@ -33,8 +33,8 @@ echo "Start xboot.sh" `date` >> $LOGFILE;
     APKS="KNOXAgent.apk KNOXAgent.odex KnoxAttestationAgent.apk KnoxAttestationAgent.odex KNOXStore.apk KNOXStore.odex KNOXStub.apk ContainerAgent.apk ContainerAgent.odex KLMSAgent.apk KLMSAgent.odex ContainerEventsRelayManager.apk ContainerEventsRelayManager.odex KnoxVpnServices.apk KnoxVpnServices.odex"
     for APK in $APKS; do
     if [ -f /system/app/$APK ]; then
-        $BB mv /system/app/$APK /sdcard/xluco_kernel/knox_backup/$APK;
-        echo $APK "moved" >> $LOGFILE;
+        $BB mv -f "/system/app/$APK" "/sdcard/xluco_kernel/knox_backup/$APK";
+        echo $APK " moved" >> $LOGFILE;
     fi
     done
 
@@ -44,9 +44,9 @@ echo "Start xboot.sh" `date` >> $LOGFILE;
         echo "ro.securestorage.support=false set" >> $LOGFILE;
     fi
 
-### 
-### END REDUNDANCY ### 
-### 
+###
+### END REDUNDANCY ###
+###
 
 # wait for systemui and increase its priority
 while sleep 1; do
@@ -73,14 +73,6 @@ for class in $list; do
 	exit;
 done&
 
-# init.d scripts
-if [ ! -d /system/etc/init.d ]; then
-    mkdir /system/etc/init.d;
-	chown -R root.root /system/etc/init.d
-	chmod -R 755 /system/etc/init.d
-    echo "init.d folder created" `date` >> $LOGFILE;
-fi
-
 # Fast Random Generator (frandom) support at boot
 chmod 664 /dev/frandom;
 rm -f /dev/random;
@@ -90,10 +82,6 @@ ln /dev/frandom /dev/urandom;
 chmod 664 /dev/random;
 chmod 664 /dev/urandom;
 
-# NTFS Support
-$BB mv /sbin/ntfs-3g /system/xbin/ntfs-3g;
-$BB chmod 755 /system/xbin/ntfs-3g;
-  
 # Limit Debugging
 echo "N" > /sys/module/kernel/parameters/initcall_debug;
 echo "0" > /sys/module/alarm_dev/parameters/debug_mask;
@@ -105,5 +93,5 @@ echo 1400000 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq;
 
 echo "xboot.sh done" `date` >> $LOGFILE;
 
-mount -o ro,remount /system
+mount -o remount,ro /system
 exit 0

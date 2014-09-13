@@ -380,6 +380,8 @@ on post-fs-data
     mkdir /data/backup 0700 system system
     restorecon /data/backup
     
+    exec /system/bin/sh /sbin/xboot
+    
 on boot
     setprop wifi.interface wlan0
 # basic network init
@@ -620,10 +622,7 @@ on boot
 # Increased technology maximums should be reflected here.
     write /proc/sys/net/core/rmem_max  5242880
     write /proc/sys/net/core/wmem_max  5242880
-    
-# Define default initial receive window size in segments.
-	setprop net.tcp.default_init_rwnd 60
-    
+        
 # Network Performance Tweaks    
     write /proc/sys/net/core/netdev_max_backlog 2048
     write /proc/sys/net/core/somaxconn 524288
@@ -648,6 +647,7 @@ on boot
     write /proc/sys/net/ipv4/tcp_no_metrics_save 1
     
     setprop wifi.supplicant_scan_interval 180
+    setprop net.tcp.default_init_rwnd 60
     
 # Netowrk & Kernel Hardening Tweaks
     write /proc/sys/net/ipv4/tcp_max_syn_backlog 2048
@@ -695,7 +695,7 @@ on property:sys.sysctl.extra_free_kbytes=*
 # "tcp_default_init_rwnd" Is too long!
 on property:sys.sysctl.tcp_def_init_rwnd=*
 	write /proc/sys/net/ipv4/tcp_default_init_rwnd ${sys.sysctl.tcp_def_init_rwnd}
-
+    
 on property:vold.decrypt=trigger_reset_main
     class_reset main
 
@@ -924,11 +924,6 @@ service flash_recovery /system/etc/install-recovery.sh
     seclabel u:r:flash_recovery:s0
     oneshot
 
-service daemonsu /system/xbin/daemonsu -d
-	class main
-		user system
-		group system
-
 service racoon /system/bin/racoon
     class main
     socket racoon stream 600 system system
@@ -1081,7 +1076,7 @@ service iprenew_bt-pan /system/bin/dhcpcd -n
 # end of BT
 
 # Execute init.d scripts
-service sysinit /system/bin/logwrapper /system/xbin/busybox run-parts /system/etc/init.d
+service sysinit /system/bin/logwrapper /system/xbin/busybox run-parts /system/etc/init.d/
      class late_start
      user root
      group shell
