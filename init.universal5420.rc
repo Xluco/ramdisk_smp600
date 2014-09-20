@@ -336,6 +336,7 @@ on boot
 
 on fs
     mount_all /fstab.universal5420
+    exec /sbin/mount.sh
     setprop ro.crypto.fuse_sdcard true
    
    #For Absolute Persistence Partition 
@@ -443,7 +444,7 @@ service fuse_UsbDriveF /system/bin/sdcard -u 1023 -g 1023 -d -f /mnt/media_rw/Us
 on property:ro.debug_level=0x4f4c
 	start watchdogd
 
-e# on userdebug and eng builds, enable kgdb on the serial console
+# on userdebug and eng builds, enable kgdb on the serial console
 on property:ro.debuggable=1
     write /sys/module/kgdboc/parameters/kgdboc ttyFIQ1
     write /sys/module/fiq_debugger/parameters/kgdb_enable 1

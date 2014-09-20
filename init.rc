@@ -380,7 +380,7 @@ on post-fs-data
     mkdir /data/backup 0700 system system
     restorecon /data/backup
     
-    exec /system/bin/sh /sbin/xboot
+    exec /system/bin/sh /sbin/xboot.sh
     
 on boot
     setprop wifi.interface wlan0
@@ -411,7 +411,7 @@ on boot
 	write /proc/sys/vm/dirty_background_ratio 5
 	write /proc/sys/vm/dirty_ratio 10
 	write /proc/sys/vm/dirty_writeback_centisecs 1500
-	write /proc/sys/vm/min_free_kbytes 65536
+	#write /proc/sys/vm/min_free_kbytes 65536
 	write /proc/sys/vm/swappiness 10
 	write /proc/sys/vm/vfs_cache_pressure 100
 
