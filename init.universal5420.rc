@@ -336,7 +336,6 @@ on boot
 
 on fs
     mount_all /fstab.universal5420
-    exec /sbin/mount.sh
     setprop ro.crypto.fuse_sdcard true
    
    #For Absolute Persistence Partition 

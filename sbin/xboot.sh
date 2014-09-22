@@ -74,13 +74,15 @@ for class in $list; do
 done&
 
 # Fast Random Generator (frandom) support at boot
-chmod 664 /dev/frandom;
-rm -f /dev/random;
-rm -f /dev/urandom;
-ln /dev/frandom /dev/random;
-ln /dev/frandom /dev/urandom;
-chmod 664 /dev/random;
-chmod 664 /dev/urandom;
+if [ -e /dev/frandom ]; then
+	chmod 664 /dev/frandom;
+	rm -f /dev/random;
+	rm -f /dev/urandom;
+	ln /dev/frandom /dev/random;
+	ln /dev/frandom /dev/urandom;
+	chmod 664 /dev/random;
+	chmod 664 /dev/urandom;
+fi
 
 # Limit Debugging
 echo "N" > /sys/module/kernel/parameters/initcall_debug;
