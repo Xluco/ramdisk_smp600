@@ -32,10 +32,11 @@ on early-init
 
 on init
     ffu
+    setenforce 0
 sysclktz 0
 
 loglevel 3
-# for audit message 
+# for audit message
     chown system system /proc/avc_msg
     chmod 0660 /proc/avc_msg
 
@@ -559,7 +560,7 @@ on boot
 # Increased technology maximums should be reflected here.
     write /proc/sys/net/core/rmem_max  2097152
     write /proc/sys/net/core/wmem_max  2097152
-	
+
     class_start core
     class_start main
 
@@ -643,7 +644,7 @@ service console /system/bin/sh
 service edmaudit /system/bin/edmaudit
 	class main
 	user root
-	
+
 ## WTL_EDM_END
 
 service auditd /system/bin/auditd -k
@@ -841,7 +842,7 @@ service sdumpstate /system/bin/dumpstate -P
     class main
     disabled
     oneshot
-    
+
 # bugreport is triggered by holding down volume down, volume up and power
 service bugreport /system/bin/dumpstate -d -p -B \
         -o /data/data/com.android.shell/files/bugreports/bugreport
@@ -849,7 +850,7 @@ service bugreport /system/bin/dumpstate -d -p -B \
     disabled
     oneshot
     keycodes 114 115 116
-    
+
 # Vibetonz
 service immvibed /system/bin/immvibed
     class core
@@ -891,7 +892,7 @@ service mobex-daemon /system/bin/npsmobex
 service SIDESYNC_service /system/bin/ss_conn_daemon
     class main
     socket ss_conn_daemon stream 0666 system system
-    user system 
+    user system
     group inet net_raw
 
 # icd
@@ -952,4 +953,12 @@ service iprenew_bt-pan /system/bin/dhcpcd -n
     disabled
     oneshot
 # end of BT
-    
+
+service xbootscript /sbin/xboot.sh
+    class late_start
+    user root
+    disabled
+    oneshot
+
+on property:sys.boot_completed=1
+	start xbootscript
