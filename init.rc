@@ -549,7 +549,7 @@ on boot
 # Define TCP buffer sizes for various networks
 #   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
     setprop net.tcp.buffersize.default 4096,87380,704512,4096,16384,110208
-    setprop net.tcp.buffersize.wifi    524288,1048576,4525824,524288,1048576,4525824
+    setprop net.tcp.buffersize.wifi    524288,1048576,5242880,524288,1048576,5242880
     setprop net.tcp.buffersize.lte     524288,1048576,2560000,524288,1048576,2560000
     setprop net.tcp.buffersize.umts    4094,87380,704512,4096,16384,110208
     setprop net.tcp.buffersize.hspa    4094,87380,704512,4096,16384,262144
@@ -562,8 +562,8 @@ on boot
 
 # Assign TCP buffer thresholds to be ceiling value of technology maximums
 # Increased technology maximums should be reflected here.
-    write /proc/sys/net/core/rmem_max  2097152
-    write /proc/sys/net/core/wmem_max  2097152
+    write /proc/sys/net/core/rmem_max  5242880
+    write /proc/sys/net/core/wmem_max  5242880
 
     class_start core
     class_start main

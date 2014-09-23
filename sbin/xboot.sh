@@ -98,9 +98,6 @@ echo "0" > /sys/module/xt_qtaguid/parameters/debug_mask;
 
 # Network Tweaks
 setprop wifi.supplicant_scan_interval 180;
-setprop net.tcp.buffersize.wifi "524288,1048576,5242880,524288,1048576,5242880";
-echo 5242880 > /proc/sys/net/core/rmem_max;
-echo 5242880 > /proc/sys/net/core/wmem_max;
 echo "524288 1048576 5242880" > /proc/sys/net/ipv4/tcp_rmem;
 echo "524288 1048576 5242880" > /proc/sys/net/ipv4/tcp_wmem;
 echo 2048 > /proc/sys/net/core/netdev_max_backlog;
