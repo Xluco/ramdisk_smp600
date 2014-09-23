@@ -87,12 +87,6 @@ echo 10 > /proc/sys/fs/lease-break-time;
 
 # VM Tweaks
 echo 0 > /proc/sys/vm/swappiness;
-echo 40 > /proc/sys/vm/dirty_ratio;
-echo 100 > /proc/sys/vm/vfs_cache_pressure;
-echo 2500 > /proc/sys/vm/dirty_expire_centisecs;
-echo 10 > /proc/sys/vm/dirty_background_ratio;
-echo 1250 > /proc/sys/vm/dirty_writeback_centisecs;
-echo 0 > /proc/sys/vm/laptop_mode;
 
 # Kernel Tweaks
 echo "250 32000 100 128" > /proc/sys/kernel/sem;
