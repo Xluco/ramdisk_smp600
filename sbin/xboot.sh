@@ -85,9 +85,6 @@ echo 1024 > /sys/block/mmcblk0/queue/read_ahead_kb;
 echo 1024 > /sys/block/mmcblk0/queue/nr_requests;
 echo 10 > /proc/sys/fs/lease-break-time;
 
-# VM Tweaks
-echo 0 > /proc/sys/vm/swappiness;
-
 # Kernel Tweaks
 echo "250 32000 100 128" > /proc/sys/kernel/sem;
 echo "512" > /proc/sys/kernel/random/write_wakeup_threshold;
