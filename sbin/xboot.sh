@@ -81,7 +81,6 @@ echo 250 > /sys/block/mmcblk0/queue/iosched/read_expire;
 echo 2500 > /sys/block/mmcblk0/queue/iosched/write_expire;
 echo 1 > /sys/block/mmcblk0/queue/iosched/writes_starved;
 echo 1 > /sys/block/mmcblk0/queue/iosched/front_merges;
-echo 1024 > /sys/block/mmcblk0/queue/read_ahead_kb;
 echo 1024 > /sys/block/mmcblk0/queue/nr_requests;
 echo 10 > /proc/sys/fs/lease-break-time;
 
