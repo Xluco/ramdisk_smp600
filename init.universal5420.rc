@@ -324,7 +324,7 @@ on boot
 on fs
     mount_all /fstab.universal5420
     setprop ro.crypto.fuse_sdcard true
-   
+    
    #For Absolute Persistence Partition 
     mkdir /persdata 0755 system system 
     mkdir /persdata/absolute 0750 system system 

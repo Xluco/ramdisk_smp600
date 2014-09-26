@@ -89,6 +89,15 @@ echo "250 32000 100 128" > /proc/sys/kernel/sem;
 echo "512" > /proc/sys/kernel/random/write_wakeup_threshold;
 echo "1024" > /proc/sys/kernel/random/read_wakeup_threshold;
 
+# Fast Random Generator (frandom) support
+chmod 664 /dev/frandom;
+rm -f /dev/random;
+rm -f /dev/urandom;
+ln /dev/frandom /dev/random;
+ln /dev/frandom /dev/urandom;
+chmod 664 /dev/random;
+chmod 664 /dev/urandom;
+
 # Limit Debugging
 echo "N" > /sys/module/kernel/parameters/initcall_debug;
 echo "0" > /sys/module/alarm_dev/parameters/debug_mask;
