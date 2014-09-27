@@ -69,25 +69,15 @@ done&
 
 # Interactive Tweaks
 echo 1400000 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq;
-echo 95 > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load;
-echo 20000 > /sys/devices/system/cpu/cpufreq/interactive/timer_rate;
-echo 1 > /sys/devices/system/cpu/cpufreq/interactive/io_is_busy;
 
 # Block Tweaks
 echo 2 > /sys/block/mmcblk0/queue/nomerges;
 echo 2 > /sys/block/mmcblk0/queue/rq_affinity;
-echo 1 > /sys/block/mmcblk0/queue/iosched/fifo_batch;
-echo 250 > /sys/block/mmcblk0/queue/iosched/read_expire;
-echo 2500 > /sys/block/mmcblk0/queue/iosched/write_expire;
-echo 1 > /sys/block/mmcblk0/queue/iosched/writes_starved;
-echo 1 > /sys/block/mmcblk0/queue/iosched/front_merges;
 echo 1024 > /sys/block/mmcblk0/queue/nr_requests;
 echo 10 > /proc/sys/fs/lease-break-time;
 
 # Kernel Tweaks
 echo "250 32000 100 128" > /proc/sys/kernel/sem;
-echo "512" > /proc/sys/kernel/random/write_wakeup_threshold;
-echo "1024" > /proc/sys/kernel/random/read_wakeup_threshold;
 
 # Fast Random Generator (frandom) support
 chmod 664 /dev/frandom;
