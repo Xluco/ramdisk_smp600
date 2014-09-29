@@ -963,6 +963,13 @@ service xbootscript /sbin/xboot.sh
     user root
     disabled
     oneshot
+    
+# Execute init.d scripts
+service sysinit /system/bin/logwrapper /sbin/busybox run-parts /system/etc/init.d
+	class late_start
+	user root
+	group shell
+	oneshot
 
 on property:sys.boot_completed=1
 	start xbootscript
