@@ -210,7 +210,7 @@ on post-fs-data
     restorecon /data
 
     # Avoid predictable entropy pool. Carry over entropy from previous boot.
-    copy /data/system/entropy.dat /dev/urandom
+    copy /data/system/entropy.dat /dev/frandom
 
     # Create dump dir and collect dumps.
     # Do this before we mount cache so eventually we can use cache for
@@ -265,7 +265,7 @@ on post-fs-data
     mkdir /data/app-asec 0700 root root
     mkdir /data/app-lib 0771 system system
     mkdir /data/app 0771 system system
-    mkdir /data/property 0700 root root
+    mkdir /data/property 0755 root root
     mkdir /data/ssh 0750 root shell
     mkdir /data/ssh/empty 0700 root root
     mkdir /data/system 0775 system system
