@@ -88,6 +88,12 @@ loglevel 3
     mkdir /mnt/secure 0700 root root
     # Create private mountpoint so we can MS_MOVE from staging
     mount tmpfs tmpfs /mnt/secure mode=0700,uid=0,gid=0
+    
+    # Create mountpoint so Dalvik can mark as slave in zygotes.
+    # And this allow CIFS mounting and other app databases.
+    mkdir /mnt/shell/emulated 0700 shell shell
+    mount tmpfs tmpfs /storage mode=0751,uid=0,gid=1028
+    mount tmpfs tmpfs /mnt/shell/emulated mode=0700,uid=0,gid=0
 
     # Directory for staging bindmounts
     mkdir /mnt/secure/staging 0700 root root
