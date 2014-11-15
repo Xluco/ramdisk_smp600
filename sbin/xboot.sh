@@ -76,9 +76,6 @@ echo 2 > /sys/block/mmcblk0/queue/rq_affinity;
 echo 1024 > /sys/block/mmcblk0/queue/nr_requests;
 echo 10 > /proc/sys/fs/lease-break-time;
 
-# Kernel Tweaks
-echo "250 32000 100 128" > /proc/sys/kernel/sem;
-
 # Fast Random Generator (frandom) support
 chmod 664 /dev/frandom;
 rm -f /dev/random;
@@ -96,54 +93,6 @@ echo "0" > /sys/module/xt_qtaguid/parameters/debug_mask;
 
 # Network Tweaks
 setprop wifi.supplicant_scan_interval 180;
-echo "524288 1048576 5242880" > /proc/sys/net/ipv4/tcp_rmem;
-echo "524288 1048576 5242880" > /proc/sys/net/ipv4/tcp_wmem;
-echo 2048 > /proc/sys/net/core/netdev_max_backlog;
-echo 2 > /proc/sys/net/ipv4/tcp_ecn;
-echo 1 > /proc/sys/net/ipv4/tcp_sack;
-echo 1 > /proc/sys/net/ipv4/tcp_fack;
-echo 1 > /proc/sys/net/ipv4/tcp_dsack;
-echo 1 > /proc/sys/net/ipv4/tcp_low_latency;
-echo 1 > /proc/sys/net/ipv4/tcp_timestamps;
-echo 1 > /proc/sys/net/ipv4/tcp_window_scaling;
-echo 1 > /proc/sys/net/ipv4/tcp_tw_reuse;
-echo 1 > /proc/sys/net/ipv4/tcp_tw_recycle;
-echo 15 > /proc/sys/net/ipv4/tcp_fin_timeout;
-echo 300 > /proc/sys/net/ipv4/tcp_keepalive_time;
-echo 5 > /proc/sys/net/ipv4/tcp_keepalive_probes;
-echo 15 > /proc/sys/net/ipv4/tcp_keepalive_intvl;
-echo 1 > /proc/sys/net/ipv4/tcp_no_metrics_save;
-echo 1 > /proc/sys/net/ipv4/tcp_moderate_rcvbuf;
-echo 0 > /proc/sys/net/ipv4/ip_no_pmtu_disc;
-echo 524288 > /proc/sys/net/core/somaxconn;
-echo 524288 > /proc/sys/net/core/optmem_max;
-echo 1440000 > /proc/sys/net/ipv4/tcp_max_tw_buckets;
-
-# Network Hardening
-echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts;
-echo 2048 > /proc/sys/net/ipv4/tcp_max_syn_backlog;
-echo 0 > /proc/sys/net/ipv4/ip_forward;
-echo 1 > /proc/sys/net/ipv4/tcp_rfc1337;
-echo 1 > /proc/sys/net/ipv4/tcp_workaround_signed_windows;
-echo 1 > /proc/sys/net/ipv4/tcp_mtu_probing;
-echo 2 > /proc/sys/net/ipv4/tcp_frto_response;
-echo 2 > /proc/sys/net/ipv4/tcp_synack_retries;
-echo 1 > /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses;
-echo 0 > /proc/sys/net/ipv4/conf/all/accept_redirects;
-echo 0 > /proc/sys/net/ipv4/conf/all/send_redirects;
-echo 0 > /proc/sys/net/ipv4/conf/all/accept_source_route;
-echo 0 > /proc/sys/net/ipv4/conf/all/forwarding;
-echo 1 > /proc/sys/net/ipv4/conf/all/rp_filter;
-echo 0 > /proc/sys/net/ipv4/conf/all/log_martians;
-echo 0 > /proc/sys/net/ipv6/conf/default/router_solicitations;
-echo 0 > /proc/sys/net/ipv6/conf/default/accept_ra_rtr_pref;
-echo 0 > /proc/sys/net/ipv6/conf/default/accept_ra_pinfo;
-echo 0 > /proc/sys/net/ipv6/conf/default/accept_ra_defrtr;
-echo 0 > /proc/sys/net/ipv6/conf/default/accept_redirects;
-echo 0 > /proc/sys/net/ipv6/conf/default/autoconf;
-echo 0 > /proc/sys/net/ipv6/conf/default/dad_transmits;
-echo 1 > /proc/sys/net/ipv6/conf/default/max_addresses;
-echo 1 > /proc/sys/net/ipv4/route/flush;
 
 # Kernel Hardening
 echo 2 > /proc/sys/kernel/kptr_restrict;
