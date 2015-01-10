@@ -1,6 +1,6 @@
 #!/system/bin/sh
 BB="/system/xbin/busybox"
-LOG="/sdcard/xluco_kernel/log.txt"
+LOG="/sdcard/xluco/log.txt"
 
 PATH=/sbin:/system/sbin:/system/bin:/system/xbin
 export PATH
