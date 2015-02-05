@@ -67,7 +67,7 @@ for class in $list; do
 	exit;
 done&
 
-# Interactive Tweaks
+# Powersaving Tweaks
 echo 1400000 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq;
 
 # Block Tweaks
@@ -94,11 +94,24 @@ echo "0" > /sys/module/xt_qtaguid/parameters/debug_mask;
 # Network Tweaks
 setprop wifi.supplicant_scan_interval 180;
 
-# Kernel Hardening
-echo 2 > /proc/sys/kernel/kptr_restrict;
-echo 1 > /proc/sys/kernel/randomize_va_space;
-echo 1 > /proc/sys/kernel/dmesg_restrict;
-echo 0 > /proc/sys/kernel/core_uses_pid;
+# Network Hardening
+echo 1 > /proc/sys/net/ipv4/tcp_syncookies;
+echo 2048 > /proc/sys/net/ipv4/tcp_max_syn_backlog;
+echo 2 > /proc/sys/net/ipv4/tcp_synack_retries;
+echo 1 > /proc/sys/net/ipv4/tcp_abort_on_overflow;
+echo 0 > /proc/sys/net/ipv4/ip_forward;
+echo 1 > /proc/sys/net/ipv4/tcp_rfc1337;
+echo 1 > /proc/sys/net/ipv4/tcp_workaround_signed_windows;
+echo 1 > /proc/sys/net/ipv4/tcp_mtu_probing;
+echo 2 > /proc/sys/net/ipv4/tcp_frto_response;
+echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts;
+echo 1 > /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses;
+echo 0 > /proc/sys/net/ipv4/conf/all/accept_redirects;
+echo 0 > /proc/sys/net/ipv4/conf/all/send_redirects;
+echo 0 > /proc/sys/net/ipv4/conf/all/accept_source_route;
+echo 0 > /proc/sys/net/ipv4/conf/all/forwarding;
+echo 1 > /proc/sys/net/ipv4/conf/all/rp_filter;
+echo 0 > /proc/sys/net/ipv4/conf/all/log_martians;
 
 echo "xboot.sh finished" `date` >> $LOG;
 

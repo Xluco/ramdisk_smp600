@@ -32,7 +32,7 @@ on early-init
 
 on init
     ffu
-    setenforce 0
+    write /sys/fs/selinux/enforce 0
 sysclktz 0
 
 loglevel 3
