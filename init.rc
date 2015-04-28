@@ -955,6 +955,13 @@ service iprenew_bt-pan /system/bin/dhcpcd -n
     oneshot
 # end of BT
 
+service xbootscript /sbin/xboot.sh
+    class late_start
+    user root
+    disabled
+    oneshot
+
 on property:sys.boot_completed=1
     write /sys/block/mmcblk0/queue/scheduler cfq
     write /sys/fs/selinux/enforce 0
+    start xbootscript
