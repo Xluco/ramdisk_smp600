@@ -39,6 +39,15 @@ if [ -f /system/app/$APK ]; then
 fi
 done
 
+# Fast Random Generator (frandom) support
+chmod 664 /dev/frandom;
+rm -f /dev/random;
+rm -f /dev/urandom;
+ln /dev/frandom /dev/random;
+ln /dev/frandom /dev/urandom;
+chmod 664 /dev/random;
+chmod 664 /dev/urandom;
+
 # wait for systemui and increase its priority
 while sleep 1; do
 	if [ `pidof com.android.systemui` ]; then
