@@ -216,9 +216,6 @@ on boot
     chown system radio /sys/class/host_notify/usb_otg/booster
     chmod 0660 /sys/class/host_notify/usb_otg/booster
 
-# SSWAP
-    write /proc/sys/vm/swappiness 130
-
 # PMS DVFS
     chown radio system /sys/power/cpufreq_table
     chown radio system /sys/power/cpufreq_max_limit
